@@ -4,7 +4,7 @@ public class DbConstants {
 
     public static class  Movie {
 
-        public static final String TABLE_NAME = "movie";
+        public static final String TABLE_NAME = "movies";
 
         public static final String ID = "id";
 
@@ -19,7 +19,7 @@ public class DbConstants {
 
     public static class Genre {
 
-        public static final String TABLE_NAME = "genre";
+        public static final String TABLE_NAME = "genres";
 
         public static final String ID   = "id";
         public static final String NAME = "name";
@@ -28,7 +28,7 @@ public class DbConstants {
 
     public static class Actor {
 
-        public static final String TABLE_NAME = "actor";
+        public static final String TABLE_NAME = "actors";
 
         public static final String ID = "id";
 
