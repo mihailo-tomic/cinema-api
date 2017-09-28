@@ -4,7 +4,7 @@ import com.mihailo.cinema.model.Genre;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 
-@RestResource(exported = false)
+@RestResource(exported = true)
 public interface GenreRepository extends CrudRepository<Genre, Long> {
 
     Genre findByName(String name);

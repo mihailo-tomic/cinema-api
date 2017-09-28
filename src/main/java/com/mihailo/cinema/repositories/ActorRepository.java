@@ -4,5 +4,5 @@ import com.mihailo.cinema.model.Actor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 
-@RestResource(exported = false)
+@RestResource(exported = true)
 public interface ActorRepository extends CrudRepository<Actor, Long> {}
