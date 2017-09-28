@@ -2,20 +2,20 @@
 
 This project is a showcase of the use of back-end and front-end technologies. The goal is to create a simple API for a movie theater web site.
  
- #Requirements
+ # Requirements
  
  * Java 1.8
  * Gradle
  * Git
  * MySQL
  
- #Setup
+ # Setup
  
  * Clone the repository from Github using Git ``git clone https://github.com/mihailo-tomic/cinema-api.git``
  * (Optional) Import the project into your IDE (Eclipse, IntelliJ, NetBeans...)
  * Update the ``src/main/resource/application.properties`` and ``src/main/resources/db/flyway.prperties`` with your MySQL database credentials
  
- #Building and starting the project
+ # Building and starting the project
  
  The required MySQL database is created using the Flyway plugin. All structural changes to the database are added to the ``src/main/resources/db/migration`` directory. To create or update the database, run ``gradle flywayMigrate``.
  
@@ -25,9 +25,9 @@ This project is a showcase of the use of back-end and front-end technologies. Th
  
  >> Note: All commands are run from the project's root directory
  
- #API endpoints
+ # API endpoints
  
- ###Movie
+ ### Movie
  
  Endpoints for CRUD operations:
  
@@ -298,6 +298,6 @@ This project is a showcase of the use of back-end and front-end technologies. Th
  
      Http status: **200 (OK)**
  
- #Tests
+ # Tests
  
  To start the tests, run ``gradle test``.
