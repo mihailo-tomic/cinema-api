@@ -50,10 +50,11 @@ public class Movie {
 
     public Movie() {}
 
-    public Movie(String title, String originalTitle, Integer duration, Date premiereDate, List<Genre> genres, List<Actor> actors) {
+    public Movie(String title, String originalTitle, Integer duration, String director, Date premiereDate, List<Genre> genres, List<Actor> actors) {
         this.title = title;
         this.originalTitle = originalTitle;
         this.duration = duration;
+        this.director = director;
         this.premiereDate = premiereDate;
         this.genres = genres;
         this.actors = actors;
