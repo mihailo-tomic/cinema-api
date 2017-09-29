@@ -158,9 +158,26 @@ public class MovieRestEndpointTest {
         System.out.println(movieJson);
 
         this.mockMvc.perform(
-                post(ApiConstants.Movie.MOVIE_PATH).contentType(contentTypeApplicationJson).content(movieJson)
+                post(ApiConstants.Movie.MOVIE_PATH)
+                        .contentType(contentTypeApplicationJson)
+                        .content(movieJson)
         ).andExpect(
                 status().isCreated()
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testGetAllMovies() throws Exception {
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.MOVIE_PATH)
+        ).andExpect(
+                jsonPath("$._embedded.movies", hasSize(1))
+        ).andExpect(
+                jsonPath("$._embedded.movies[0].title", is(movie.getTitle()))
         ).andDo(
                 print()
         );
@@ -172,13 +189,30 @@ public class MovieRestEndpointTest {
 
         this.mockMvc.perform(
                 get(ApiConstants.Movie.SINGLE_MOVIE_PATH, this.movie.getId())
-        ).andExpect(status().isOk()
-        ).andExpect(jsonPath("$.title", is(this.movie.getTitle()))
-        ).andExpect(jsonPath("$.originalTitle", is(this.movie.getOriginalTitle()))
-        ).andExpect(jsonPath("$.duration", is(this.movie.getDuration()))
+        ).andExpect(
+                status().isOk()
+        ).andExpect(
+                jsonPath("$.title", is(this.movie.getTitle()))
+        ).andExpect(
+                jsonPath("$.originalTitle", is(this.movie.getOriginalTitle()))
+        ).andExpect(
+                jsonPath("$.duration", is(this.movie.getDuration()))
         ).andDo(
                 print()
         );
+    }
+
+    @Test
+    public void testGetSingleMovieWhenMovieDoesNotExist() throws Exception {
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.SINGLE_MOVIE_PATH, -1)
+        ).andExpect(
+                status().isNotFound()
+        ).andDo(
+                print()
+        );
+
     }
 
     @Test
@@ -287,7 +321,7 @@ public class MovieRestEndpointTest {
         this.mockMvc.perform(
                 put(ApiConstants.Movie.ACTORS_PATH, movie.getId())
                         .contentType(contentTypeUriList)
-                .content(String.join("\n", newActors))
+                        .content(String.join("\n", newActors))
         ).andExpect(
                 status().is2xxSuccessful()
         ).andDo(
@@ -342,6 +376,99 @@ public class MovieRestEndpointTest {
                 delete(ApiConstants.Movie.SINGLE_MOVIE_PATH, movie.getId())
         ).andExpect(
                 status().is2xxSuccessful()
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testDeleteMovieWhenMovieDoesNotExist() throws Exception {
+
+        this.mockMvc.perform(
+                delete(ApiConstants.Movie.SINGLE_MOVIE_PATH, -1)
+        ).andExpect(
+                status().isNotFound()
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testTitleSearchWhenMovieExists() throws Exception {
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.SEARCH_TITLE_PATH, movie.getTitle())
+        ).andExpect(
+                jsonPath("$._embedded.movies[0].title", is(movie.getTitle()))
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testTitleSearchWhenMovieDoesNotExist() throws Exception {
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.SEARCH_TITLE_PATH, -1)
+        ).andExpect(
+                jsonPath("$._embedded.movies", hasSize(0))
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testUpcomingSearchWhenMovieExists() throws Exception {
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.SEARCH_UPCOMING_PATH, "2001-12-01")
+        ).andExpect(
+                jsonPath("$._embedded.movies[0].title", is(movie.getTitle()))
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testUpcomingSearchWhenMovieDoesNotExist() throws Exception {
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.SEARCH_UPCOMING_PATH, "2005-01-01")
+        ).andExpect(
+                jsonPath("$._embedded.movies", hasSize(0))
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testUpcomingRangeSearchWhenMovieExists() throws Exception {
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.SEARCH_UPCOMING_RANGE_PATH, "2001-12-01", "2001-12-31")
+        ).andExpect(
+                jsonPath("$._embedded.movies", hasSize(1))
+        ).andExpect(
+                jsonPath("$._embedded.movies[0].title", is(movie.getTitle()))
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testUpcomingRangeSearchWhenMovieDoesNotExist() throws Exception {
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.SEARCH_UPCOMING_RANGE_PATH, "2001-12-21", "2001-12-31")
+        ).andExpect(
+                jsonPath("$._embedded.movies", hasSize(0))
         ).andDo(
                 print()
         );
