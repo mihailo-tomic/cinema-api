@@ -7,6 +7,7 @@ import com.mihailo.cinema.model.Movie;
 import com.mihailo.cinema.repositories.ActorRepository;
 import com.mihailo.cinema.repositories.GenreRepository;
 import com.mihailo.cinema.repositories.MovieRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,9 +41,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @WebAppConfiguration
 public class MovieRestEndpointTest {
 
-    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+    private MediaType contentTypeApplicationJson = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
+
+    private MediaType contentTypeUriList = new MediaType("text", "uri-list", Charset.forName("utf8"));
 
     private MockMvc mockMvc;
 
@@ -102,6 +105,8 @@ public class MovieRestEndpointTest {
         this.actors = new ArrayList<>();
         this.actors.add(actorRepository.save(new Actor("Elijah Wood","Frodo")));
         this.actors.add(actorRepository.save(new Actor("Orlando Bloom", "Legolas")));
+        this.actors.add(actorRepository.save(new Actor("Viggo Mortensen", "Aragorn")));
+        this.actors.add(actorRepository.save(new Actor("Ian McKellen", "Gandalf")));
 
         this.movie = movieRepository.save(
                 new Movie(
@@ -115,6 +120,15 @@ public class MovieRestEndpointTest {
                     Arrays.asList(this.actors.get(0), this.actors.get(1))
                 )
         );
+
+    }
+
+    @After
+    public void afterEveryTest() {
+
+        this.genreRepository.deleteAll();
+        this.actorRepository.deleteAll();
+        this.movieRepository.deleteAll();
 
     }
 
@@ -144,7 +158,7 @@ public class MovieRestEndpointTest {
         System.out.println(movieJson);
 
         this.mockMvc.perform(
-                post("/cinema/api/" + ApiConstants.Movie.PATH).contentType(contentType).content(movieJson)
+                post(ApiConstants.Movie.MOVIE_PATH).contentType(contentTypeApplicationJson).content(movieJson)
         ).andExpect(
                 status().isCreated()
         ).andDo(
@@ -157,7 +171,7 @@ public class MovieRestEndpointTest {
     public void testGetSingleMovie() throws Exception {
 
         this.mockMvc.perform(
-                get("/cinema/api/" + ApiConstants.Movie.PATH + "/" + this.movie.getId())
+                get(ApiConstants.Movie.SINGLE_MOVIE_PATH, this.movie.getId())
         ).andExpect(status().isOk()
         ).andExpect(jsonPath("$.title", is(this.movie.getTitle()))
         ).andExpect(jsonPath("$.originalTitle", is(this.movie.getOriginalTitle()))
@@ -184,7 +198,7 @@ public class MovieRestEndpointTest {
         String movieJson = json(updatedMovie);
 
         this.mockMvc.perform(
-                patch("/cinema/api/" + ApiConstants.Movie.PATH + "/" +movie.getId()).contentType(contentType).content(movieJson)
+                put(ApiConstants.Movie.SINGLE_MOVIE_PATH, movie.getId()).contentType(contentTypeApplicationJson).content(movieJson)
         ).andExpect(
                 status().is2xxSuccessful()
         ).andDo(
@@ -192,7 +206,7 @@ public class MovieRestEndpointTest {
         );
 
         this.mockMvc.perform(
-                get("/cinema/api/" + ApiConstants.Movie.PATH + "/" + movie.getId())
+                get(ApiConstants.Movie.SINGLE_MOVIE_PATH, movie.getId())
         ).andExpect(
                 status().isOk()
         ).andExpect(
@@ -204,10 +218,128 @@ public class MovieRestEndpointTest {
     }
 
     @Test
+    public void testSetGenres() throws Exception {
+
+        List<String> newGenres = new LinkedList<>();
+        newGenres.add("http://localhost:8080/cinema/api/genres/" + genres.get(0).getId());  // action
+        newGenres.add("http://localhost:8080/cinema/api/genres/" + genres.get(1).getId());  // drama
+        newGenres.add("http://localhost:8080/cinema/api/genres/" + genres.get(3).getId());  // adventure
+
+        this.mockMvc.perform(
+                put(ApiConstants.Movie.GENRES_PATH, movie.getId())
+                    .contentType(contentTypeUriList)
+                    .content(String.join("\n", newGenres))
+        ).andExpect(
+                status().is2xxSuccessful()
+        ).andDo(
+                print()
+        );
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.GENRES_PATH, movie.getId())
+        ).andExpect(
+                jsonPath("$._embedded.genres", hasSize(3))
+        ).andExpect(
+                jsonPath("$..name", hasItems(this.genres.get(0).getName(), this.genres.get(1).getName(), this.genres.get(3).getName()))
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testAddGenres() throws Exception {
+
+        List<String> newGenres = new LinkedList<>();
+        newGenres.add("http://localhost:8080/cinema/api/genres/" + genres.get(0).getId());  // action
+        newGenres.add("http://localhost:8080/cinema/api/genres/" + genres.get(2).getId());  // horror
+
+        this.mockMvc.perform(
+                patch(ApiConstants.Movie.GENRES_PATH, movie.getId())
+                        .contentType(contentTypeUriList)
+                        .content(String.join("\n", newGenres))
+        ).andExpect(
+                status().is2xxSuccessful()
+        ).andDo(
+                print()
+        );
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.GENRES_PATH, movie.getId())
+        ).andExpect(
+                jsonPath("$._embedded.genres", hasSize(5))
+        ).andExpect(
+                jsonPath("$..name", hasItems(this.genres.get(0).getName(), this.genres.get(1).getName(), this.genres.get(2).getName(), this.genres.get(3).getName(), this.genres.get(4).getName()))
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testSetActors() throws Exception {
+
+        List<String> newActors = new LinkedList<>();
+        newActors.add("http://localhost:8080/cinema/api/actors/" + actors.get(0).getId());
+        newActors.add("http://localhost:8080/cinema/api/actors/" + actors.get(1).getId());
+        newActors.add("http://localhost:8080/cinema/api/actors/" + actors.get(3).getId());
+
+        this.mockMvc.perform(
+                put(ApiConstants.Movie.ACTORS_PATH, movie.getId())
+                        .contentType(contentTypeUriList)
+                .content(String.join("\n", newActors))
+        ).andExpect(
+                status().is2xxSuccessful()
+        ).andDo(
+                print()
+        );
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.ACTORS_PATH, movie.getId())
+        ).andExpect(
+                jsonPath("$._embedded.actors", hasSize(3))
+        ).andExpect(
+                jsonPath("$..name", hasItems(this.actors.get(0).getName(), this.actors.get(1).getName(), this.actors.get(3).getName()))
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
+    public void testAddActors() throws Exception {
+
+        List<String> newActors = new LinkedList<>();
+        newActors.add("http://localhost:8080/cinema/api/actors/" + actors.get(2).getId());
+        newActors.add("http://localhost:8080/cinema/api/actors/" + actors.get(3).getId());
+
+        this.mockMvc.perform(
+                patch(ApiConstants.Movie.ACTORS_PATH, movie.getId())
+                        .contentType(contentTypeUriList)
+                        .content(String.join("\n", newActors))
+        ).andExpect(
+                status().is2xxSuccessful()
+        ).andDo(
+                print()
+        );
+
+        this.mockMvc.perform(
+                get(ApiConstants.Movie.ACTORS_PATH, movie.getId())
+        ).andExpect(
+                jsonPath("$._embedded.actors", hasSize(4))
+        ).andExpect(
+                jsonPath("$..name", hasItems(this.actors.get(0).getName(), this.actors.get(1).getName(), this.actors.get(2).getName(), this.actors.get(3).getName()))
+        ).andDo(
+                print()
+        );
+
+    }
+
+    @Test
     public void testDeleteMovie() throws Exception {
 
         this.mockMvc.perform(
-                delete("/cinema/api/" + ApiConstants.Movie.PATH + "/" + movie.getId())
+                delete(ApiConstants.Movie.SINGLE_MOVIE_PATH, movie.getId())
         ).andExpect(
                 status().is2xxSuccessful()
         ).andDo(
