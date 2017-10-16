@@ -25,6 +25,7 @@ public class Movie {
     @Column(name = DbConstants.Movie.DIRECTOR)
     private String director;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = DbConstants.Movie.PREMIERE_DATE)
     private Date premiereDate;
 
