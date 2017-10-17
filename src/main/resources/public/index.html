@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="cinema">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Cinema</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous"/>
+
+</head>
+<body ng-controller="CinemaController as cinema">
+
+    <div class="container">
+
+        <div class="row" style="margin-bottom: 5rem;">
+            <h1 class="display-1">Cinema</h1>
+        </div>
+
+        <div class="media" ng-repeat="movie in cinema.movies">
+            <img class="d-flex align-self-start mr-3" ng-src="http://ia.media-imdb.com/media/imdb/01/I/47/58/83/10.gif"/>
+            <div class="media-body">
+                <h5 class="mt-0">{{ movie.title}}</h5>
+                <p>Original title: {{ movie.originalTitle}} </p>
+                <p>Duration: {{ movie.duration }} min</p>
+                <p>Director: {{ movie.director }}</p>
+                <p>Premiere date: {{ movie.premiereDate | date }}</p>
+                <p>Genres: <span class="badge badge-pill badge-secondary" ng-repeat="genre in movie.genres"> {{ genre }} </span></p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container fixed-bottom">
+        <blockquote class="blockquote">
+            <p class="mb-0">You're a wizard, Harry.</p>
+            <footer class="blockquote-footer">Hagrid in <cite title="Source Title">Harry Potter And The Philosopher's Stone</cite></footer>
+        </blockquote>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+
+    <script src="app.js"></script>
+</body>
+</html>
