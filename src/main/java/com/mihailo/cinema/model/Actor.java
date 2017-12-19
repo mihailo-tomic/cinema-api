@@ -20,6 +20,11 @@ public class Actor {
     public Actor() {}
 
     public Actor(String name, String character) {
+        this(null, name, character);
+    }
+
+    public Actor(Long id, String name, String character) {
+        this.id = id;
         this.name = name;
         this.character = character;
     }

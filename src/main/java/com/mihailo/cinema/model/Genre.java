@@ -18,6 +18,11 @@ public class Genre {
     public Genre() {}
 
     public Genre(String name) {
+        this(null, name);
+    }
+
+    public Genre(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 

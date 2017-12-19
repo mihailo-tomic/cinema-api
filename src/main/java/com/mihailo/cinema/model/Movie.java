@@ -51,7 +51,8 @@ public class Movie {
 
     public Movie() {}
 
-    public Movie(String title, String originalTitle, Integer duration, String director, Date premiereDate, List<Genre> genres, List<Actor> actors) {
+    public Movie(Long id, String title, String originalTitle, Integer duration, String director, Date premiereDate, List<Genre> genres, List<Actor> actors) {
+        this.id = id;
         this.title = title;
         this.originalTitle = originalTitle;
         this.duration = duration;
@@ -59,6 +60,10 @@ public class Movie {
         this.premiereDate = premiereDate;
         this.genres = genres;
         this.actors = actors;
+    }
+
+    public Movie(String title, String originalTitle, Integer duration, String director, Date premiereDate, List<Genre> genres, List<Actor> actors) {
+        this(null, title, originalTitle, duration, director, premiereDate, genres, actors);
     }
 
     public Long getId() {
